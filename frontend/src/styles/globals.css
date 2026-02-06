@@ -1,0 +1,207 @@
+:root {
+  /* Colors */
+  --primary: #FF4D00;
+  --primary-dark: #E64500;
+  --neutral-950: #0A0A0A;
+  --neutral-500: #6B7280;
+  --neutral-200: #EAEAEA;
+  --neutral-100: #F3F3F3;
+  --white: #FFFFFF;
+  --success: #22C55E;
+  --error: #EF4444;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--neutral-100);
+  color: var(--neutral-950);
+  line-height: 1.5;
+}
+
+/* Page Container */
+.page-container {
+  background: var(--white);
+  border: 2px solid var(--neutral-950);
+  min-height: 100vh;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+  padding: var(--space-12) var(--space-8) var(--space-8);
+  border-bottom: 2px solid var(--neutral-950);
+  text-align: center;
+}
+
+.page-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 2.5rem;
+  color: var(--neutral-950);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* Page Content */
+.page-content {
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Field Container */
+.field-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.field-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--neutral-950);
+}
+
+.field-required {
+  color: var(--error);
+  font-size: 0.75rem;
+}
+
+/* Textarea */
+.brutalist-textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--white);
+  border: 2px solid var(--neutral-950);
+  border-radius: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: var(--neutral-950);
+  resize: vertical;
+}
+
+.brutalist-textarea:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.brutalist-textarea::placeholder {
+  color: var(--neutral-500);
+}
+
+/* Clear Button */
+.btn-clear {
+  padding: var(--space-2) var(--space-3);
+  background: var(--neutral-200);
+  color: var(--neutral-950);
+  border: 2px solid var(--neutral-950);
+  border-radius: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 200ms;
+}
+
+.btn-clear:hover {
+  background: var(--neutral-100);
+}
+
+/* Generate Button */
+.btn-generate {
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: var(--primary);
+  color: var(--white);
+  border: 2px solid var(--neutral-950);
+  border-radius: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 200ms;
+}
+
+.btn-generate:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.btn-generate:disabled {
+  background: var(--neutral-200);
+  cursor: not-allowed;
+}
+
+/* Status Message */
+.status-message {
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--neutral-950);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.status-message.success {
+  background: #F0FDF4;
+  border-color: var(--success);
+}
+
+.status-message.error {
+  background: #FEF2F2;
+  border-color: var(--error);
+}
+
+.status-message.loading {
+  background: var(--neutral-100);
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--neutral-200);
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Field Hint */
+.field-hint {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: var(--neutral-500);
+  margin-top: var(--space-1);
+}
