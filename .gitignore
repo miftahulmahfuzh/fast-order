@@ -1,2 +1,4 @@
 /code_examples
 .env
+backend/.env
+frontend/node_modules
