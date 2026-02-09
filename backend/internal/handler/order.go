@@ -102,8 +102,11 @@ func (h *OrderHandler) GenerateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Sanitize output to ensure format compliance (remove [], normalize separators)
+	sanitizedResult := llm.SanitizeOrderOutput(result)
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(GenerateOrderResponse{
-		GeneratedMessage: result,
+		GeneratedMessage: sanitizedResult,
 	})
 }

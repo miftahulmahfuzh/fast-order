@@ -21,7 +21,13 @@ CRITICAL OUTPUT RULES:
 - NO concluding remarks or explanations
 - NO markdown formatting (no code blocks, no bold text)
 - Start immediately with "1." for the first order
-- The output must be ready to paste directly into WhatsApp without any cleanup`
+- The output must be ready to paste directly into WhatsApp without any cleanup
+
+FORMAT REQUIREMENTS:
+- Use ":" as separator between name and items (e.g., "1. miftah : nasi 1, lauk 1")
+- Use "," as separator between items
+- NEVER use square brackets [] around items
+- Use plain text format only: 1. name : item1, item2, item3`
 
 type GenerateOrderParams struct {
 	Mode          string // "normal", "nitro", "first-touch"
@@ -51,11 +57,14 @@ PROTEIN REQUIREMENT: At least 1 protein dish
 AVAILABLE MENU:
 ` + params.ListMenu + `
 
-OUTPUT FORMAT: 1. miftah - [nasi 1], [lauk 1], [lauk 2]
+OUTPUT FORMAT: 1. miftah : nasi 1, lauk 1, lauk 2
 
 CRITICAL OUTPUT RULES:
 - Output ONLY the numbered order list
 - NO introductory text, comments, or markdown
+- NEVER use square brackets [] around items
+- Use ":" as separator between name and items
+- Use "," as separator between items
 - Ready to paste directly into WhatsApp`
 	case "nitro":
 		// Nitro mode: current orders only, choose from existing dishes

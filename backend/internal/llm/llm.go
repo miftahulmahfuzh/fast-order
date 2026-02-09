@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/miftah/fast-order/internal/config"
@@ -41,6 +42,21 @@ func NewResilientLLM(ctx context.Context, cfg *config.LLMConfig) (*ResilientLLM,
 		llm:     llmClient,
 		breaker: breaker,
 	}, nil
+}
+
+// SanitizeOrderOutput cleans LLM output to ensure format compliance.
+// Removes square brackets [] and normalizes separators to use ":"
+func SanitizeOrderOutput(input string) string {
+	// Remove square brackets
+	result := input
+	result = strings.ReplaceAll(result, "[", "")
+	result = strings.ReplaceAll(result, "]", "")
+
+	// Normalize separator: replace " - " with " : "
+	// This handles cases where LLM uses dash instead of colon
+	result = strings.ReplaceAll(result, " - ", " : ")
+
+	return result
 }
 
 func (r *ResilientLLM) GenerateFromSinglePrompt(ctx context.Context, prompt string) (string, error) {
