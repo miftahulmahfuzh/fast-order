@@ -14,4 +14,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 # Use envsubst to substitute placeholders
 # Default PORT to 10000 if not set (Render's default)
-CMD /bin/sh -c 'export PORT=${PORT:-10000} && envsubst < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g "daemon off;"'
+# Use envsubst with SHELL-FORMAT to only substitute specific variables
+# This prevents replacing nginx's built-in variables like $host, $remote_addr, etc.
+CMD /bin/sh -c 'export PORT=${PORT:-10000} && envsubst "$$PORT $$BACKEND_URL" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g "daemon off;"'
