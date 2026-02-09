@@ -16,4 +16,4 @@ COPY nginx.conf /etc/nginx/templates/default.conf.template
 # Default PORT to 10000 if not set (Render's default)
 # Use envsubst with SHELL-FORMAT to only substitute specific variables
 # This prevents replacing nginx's built-in variables like $host, $remote_addr, etc.
-CMD ["/bin/sh", "-c", "export PORT=${PORT:-10000} && envsubst '\\$PORT \\$BACKEND_URL' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "export PORT=${PORT:-10000} && export BACKEND_URL=${BACKEND_URL%/}/ && envsubst '\\$PORT \\$BACKEND_URL' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
