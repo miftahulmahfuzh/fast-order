@@ -13,4 +13,5 @@ RUN apk add --no-cache gettext
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 # Use envsubst to substitute PORT and BACKEND_URL in nginx config
-CMD ["/bin/sh", "-c", "envsubst '\$$PORT \$$BACKEND_URL' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+# Shell form (not JSON array) for proper variable expansion
+CMD /bin/sh -c 'envsubst "$$PORT $$BACKEND_URL" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g "daemon off;"'
