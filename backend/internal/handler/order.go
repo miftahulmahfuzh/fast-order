@@ -11,6 +11,7 @@ import (
 )
 
 type GenerateOrderRequest struct {
+	Mode         string `json:"mode"`
 	ListMenu     string `json:"listMenu"`
 	CurrentOrders string `json:"currentOrders"`
 }
@@ -40,18 +41,53 @@ func (h *OrderHandler) GenerateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.CurrentOrders == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(GenerateOrderResponse{
-			Error: "Current orders is required",
-		})
-		return
+	// Default mode to "normal" if not provided
+	if req.Mode == "" {
+		req.Mode = "normal"
+	}
+
+	// Validate based on mode
+	switch req.Mode {
+	case "first-touch":
+		if req.ListMenu == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(GenerateOrderResponse{
+				Error: "List menu is required for first-touch mode",
+			})
+			return
+		}
+	case "nitro":
+		if req.CurrentOrders == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(GenerateOrderResponse{
+				Error: "Current orders is required for nitro mode",
+			})
+			return
+		}
+	case "normal":
+		if req.CurrentOrders == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(GenerateOrderResponse{
+				Error: "Current orders is required for normal mode",
+			})
+			return
+		}
+	default:
+		// Invalid mode defaults to normal behavior
+		if req.CurrentOrders == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(GenerateOrderResponse{
+				Error: "Current orders is required",
+			})
+			return
+		}
 	}
 
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
 
 	prompt := llm.BuildPrompt(llm.GenerateOrderParams{
+		Mode:          req.Mode,
 		ListMenu:      req.ListMenu,
 		CurrentOrders: req.CurrentOrders,
 	})

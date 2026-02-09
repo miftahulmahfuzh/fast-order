@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { TextAreaField } from './components/TextAreaField'
 import { GenerateButton } from './components/GenerateButton'
 import { StatusMessage } from './components/StatusMessage'
-import { generateOrder } from './lib/api'
+import { generateOrder, detectMode } from './lib/api'
 import './styles/globals.css'
 
 function App() {
@@ -36,22 +36,36 @@ function App() {
   }, [listMenu, currentOrders, isLoading])
 
   const handleGenerate = async () => {
-    if (!currentOrders.trim()) {
+    if (isLoading) return
+
+    // Detect mode
+    const mode = detectMode(listMenu, currentOrders)
+
+    // Validate based on mode
+    if (mode === 'first-touch' && !listMenu.trim()) {
+      setStatus({ type: 'error', message: 'List menu required for first-touch mode' })
+      return
+    }
+    if ((mode === 'normal' || mode === 'nitro') && !currentOrders.trim()) {
       setStatus({ type: 'error', message: 'Current orders is required' })
       return
     }
-
-    if (isLoading) return
 
     setIsLoading(true)
     setStatus({ type: 'idle', message: '' })
 
     try {
-      const data = await generateOrder({ listMenu, currentOrders })
+      const data = await generateOrder({ listMenu, currentOrders, mode })
 
       await navigator.clipboard.writeText(data.generatedMessage)
 
-      setStatus({ type: 'success', message: 'Order copied to clipboard! Press Ctrl+V to paste in WhatsApp' })
+      // Mode labels for notification
+      const modeLabels: Record<string, string> = {
+        'normal': 'Normal Mode',
+        'nitro': 'Nitro Mode',
+        'first-touch': 'First-Touch Mode',
+      }
+      setStatus({ type: 'success', message: `Order copied to clipboard! (${modeLabels[mode]}) Press Ctrl+V to paste in WhatsApp` })
     } catch (error) {
       setStatus({
         type: 'error',
@@ -69,6 +83,13 @@ function App() {
     }
   }
 
+  const handleListMenuKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault()
+      handleGenerate()
+    }
+  }
+
   return (
     <div className="page-container">
       <header className="page-header">
@@ -80,8 +101,9 @@ function App() {
           label="LIST MENU"
           value={listMenu}
           onChange={setListMenu}
-          placeholder="Paste menu here... (Ctrl+V to paste, then TAB)"
-          hint="Optional - leave empty for Nitro Mode"
+          placeholder="Paste menu here... (Ctrl+V to paste, then Shift+Enter for First-Touch Mode)"
+          hint="Optional - Shift+Enter for First-Touch Mode (order #1), leave empty for Nitro Mode"
+          onKeyDown={handleListMenuKeyDown}
           testId="list-menu"
         />
 
@@ -97,7 +119,7 @@ function App() {
 
         <GenerateButton
           onClick={handleGenerate}
-          disabled={!currentOrders.trim() || isLoading}
+          disabled={(!listMenu.trim() && !currentOrders.trim()) || isLoading}
           loading={isLoading}
         />
 
@@ -105,7 +127,7 @@ function App() {
 
         {status.type === 'idle' && (
           <div className="field-hint" style={{ textAlign: 'center', marginTop: 'var(--space-2)' }}>
-            Shortcuts: ENTER to generate • ESC to clear • Ctrl+Shift+C to generate
+            Shortcuts: Shift+Enter (First-Touch) • ENTER (Normal/Nitro) • ESC to clear • Ctrl+Shift+C to generate
           </div>
         )}
       </main>
