@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, forwardRef } from 'react'
 
 interface TextAreaFieldProps {
   label: string
@@ -9,9 +9,10 @@ interface TextAreaFieldProps {
   onKeyDown?: (e: React.KeyboardEvent) => void
   hint?: ReactNode
   testId?: string
+  autoFocus?: boolean
 }
 
-export function TextAreaField({
+export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(({
   label,
   value,
   onChange,
@@ -20,7 +21,8 @@ export function TextAreaField({
   onKeyDown,
   hint,
   testId,
-}: TextAreaFieldProps) {
+  autoFocus = false,
+}, ref) => {
   return (
     <div className="field-container">
       <div className="field-header">
@@ -38,14 +40,18 @@ export function TextAreaField({
         )}
       </div>
       <textarea
+        ref={ref}
         className="brutalist-textarea"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
+        autoFocus={autoFocus}
         data-testid={testId}
       />
       {hint && <div className="field-hint">{hint}</div>}
     </div>
   )
-}
+})
+
+TextAreaField.displayName = 'TextAreaField'

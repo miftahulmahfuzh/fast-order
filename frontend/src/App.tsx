@@ -105,6 +105,7 @@ function App() {
           hint="Optional - Shift+Enter for First-Touch Mode (order #1), leave empty for Nitro Mode"
           onKeyDown={handleListMenuKeyDown}
           testId="list-menu"
+          autoFocus
         />
 
         <TextAreaField
