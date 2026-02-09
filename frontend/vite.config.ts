@@ -7,8 +7,18 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8089',
+        target: 'https://fast-order-xvkq.onrender.com',
         changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path, // Keep the /api prefix
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('proxying:', req.method, req.url, '->', options.target + req.url);
+          });
+        },
       },
     },
   },
