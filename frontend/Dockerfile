@@ -12,6 +12,6 @@ FROM nginx:alpine
 RUN apk add --no-cache gettext
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/templates/default.conf.template
-# Use envsubst to substitute PORT and BACKEND_URL in nginx config
-# Shell form (not JSON array) for proper variable expansion
-CMD /bin/sh -c 'envsubst "$$PORT $$BACKEND_URL" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g "daemon off;"'
+# Use sed to substitute __PORT__ and __BACKEND_URL__ placeholders
+# Default PORT to 10000 if not set (Render's default)
+CMD /bin/sh -c 'export PORT=${PORT:-10000} && sed -e "s|__PORT__|$$PORT|g" -e "s|__BACKEND_URL__|$$BACKEND_URL|g" /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g "daemon off;"'
