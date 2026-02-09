@@ -8,7 +8,24 @@ Stateless webapp for generating WhatsApp lunch orders using LLM. Paste menu + cu
 - 🤖 **LLM Powered** - Smart order generation with context awareness
 - 📋 **Auto-Copy** - Result copied to clipboard automatically
 - ⌨️ **Keyboard Shortcuts** - ENTER to generate, ESC to clear
-- 🔥 **Nitro Mode** - Works without menu (chooses from existing orders)
+- 🔥 **Three Modes** - Normal, Nitro, and First-Touch mode for any ordering scenario
+
+## Order Modes
+
+| Mode | When to Use | Input | Shortcut |
+|------|-------------|-------|----------|
+| **First-Touch** | You're the first to order | Menu only | `Shift+Enter` in List Menu |
+| **Normal** | Others have already ordered | Menu + Current Orders | `ENTER` in Current Orders |
+| **Nitro** | No menu available, choose from existing | Current Orders only | Leave List Menu empty + `ENTER` |
+
+### First-Touch Mode 🆕
+Generate order #1 when you're the first person ordering. Just paste the menu and press `Shift+Enter`.
+
+### Normal Mode
+Append your order to an existing list. Paste both the menu and current orders, then press `ENTER`.
+
+### Nitro Mode
+Generate an order based on dishes others have already ordered, without needing the menu. Leave the List Menu empty and press `ENTER`.
 
 ## Quick Start
 
@@ -99,9 +116,10 @@ go run main.go
 
 | Shortcut | Action |
 |----------|--------|
-| `ENTER` | Generate & copy order |
+| `Shift+Enter` (in List Menu) | First-Touch Mode - Generate order #1 |
+| `Enter` (in Current Orders) | Normal/Nitro Mode - Generate & copy |
+| `Ctrl+Shift+C` | Generate & copy (respects current mode) |
 | `ESC` | Clear all fields |
-| `Ctrl+Shift+C` | Generate & copy order |
 
 ## Environment Variables
 
