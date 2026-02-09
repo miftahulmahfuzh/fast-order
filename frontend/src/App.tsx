@@ -82,6 +82,7 @@ function App() {
           onChange={setListMenu}
           placeholder="Paste menu here... (Ctrl+V to paste, then TAB)"
           hint="Optional - leave empty for Nitro Mode"
+          testId="list-menu"
         />
 
         <TextAreaField
@@ -91,6 +92,7 @@ function App() {
           placeholder="Paste current orders here... (Ctrl+V to paste, then ENTER to generate)"
           required
           onKeyDown={handleKeyDown}
+          testId="current-orders"
         />
 
         <GenerateButton
@@ -99,7 +101,7 @@ function App() {
           loading={isLoading}
         />
 
-        <StatusMessage type={status.type} message={status.message} />
+        <StatusMessage type={status.type} message={status.message} testId="generated-message" />
 
         {status.type === 'idle' && (
           <div className="field-hint" style={{ textAlign: 'center', marginTop: 'var(--space-2)' }}>

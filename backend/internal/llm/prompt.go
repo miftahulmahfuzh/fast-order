@@ -12,10 +12,19 @@ ALWAYS USE: "nasi 1" (never "nasi 1/2")
 LAUK COUNT: Exactly 2-3 lauk (no more, no less)
 PROTEIN REQUIREMENT: At least 1 protein dish (e.g., fillet ayam, ati ampela, dendeng sapi, udang, ikan, ceker)
 
-OUTPUT FORMAT: Match the format of existing orders exactly.`
+OUTPUT FORMAT: Match the format of existing orders exactly.
+
+CRITICAL OUTPUT RULES:
+- Output ONLY the numbered order list - nothing else
+- NO introductory text (e.g., "Here's the order", "Below is")
+- NO explanatory comments, notes, or bullet points
+- NO concluding remarks or explanations
+- NO markdown formatting (no code blocks, no bold text)
+- Start immediately with "1." for the first order
+- The output must be ready to paste directly into WhatsApp without any cleanup`
 
 type GenerateOrderParams struct {
-	ListMenu     string // Optional - full menu text
+	ListMenu      string // Optional - full menu text
 	CurrentOrders string // Required - current order list
 }
 
@@ -29,7 +38,7 @@ CURRENT ORDERS:
 
 NOTE: No menu provided. Choose miftah's order from dishes that appear in existing orders above.
 
-Generate the next order message with miftah's order appended.`
+Generate ONLY the numbered order list with miftah's order appended. Output nothing else.`
 	}
 
 	// Normal mode: with menu
@@ -41,5 +50,5 @@ AVAILABLE MENU:
 CURRENT ORDERS:
 ` + params.CurrentOrders + `
 
-Generate the next order message with miftah's order appended.`
+Generate ONLY the numbered order list with miftah's order appended. Output nothing else.`
 }

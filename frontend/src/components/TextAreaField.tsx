@@ -8,6 +8,7 @@ interface TextAreaFieldProps {
   required?: boolean
   onKeyDown?: (e: React.KeyboardEvent) => void
   hint?: ReactNode
+  testId?: string
 }
 
 export function TextAreaField({
@@ -18,6 +19,7 @@ export function TextAreaField({
   required = false,
   onKeyDown,
   hint,
+  testId,
 }: TextAreaFieldProps) {
   return (
     <div className="field-container">
@@ -41,6 +43,7 @@ export function TextAreaField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
+        data-testid={testId}
       />
       {hint && <div className="field-hint">{hint}</div>}
     </div>

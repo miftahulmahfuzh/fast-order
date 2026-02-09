@@ -2,3 +2,5 @@
 .env
 backend/.env
 frontend/node_modules
+*_code_analyzer.md
+frontend/test-results/
