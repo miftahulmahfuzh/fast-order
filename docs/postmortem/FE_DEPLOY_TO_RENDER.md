@@ -1,7 +1,9 @@
 # Postmortem: Frontend Deployment to Render
 
 **Date:** 2026-02-09
+
 **Service:** Fast Order Frontend (React + Vite + Nginx)
+
 **Platform:** Render.com
 
 ## Executive Summary
