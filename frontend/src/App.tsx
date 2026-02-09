@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Clipboard } from 'lucide-react'
 import { TextAreaField } from './components/TextAreaField'
 import { GenerateButton } from './components/GenerateButton'
 import { StatusMessage } from './components/StatusMessage'
@@ -93,7 +94,10 @@ function App() {
   return (
     <div className="page-container">
       <header className="page-header">
-        <h1 className="page-title">FAST ORDER</h1>
+        <h1 className="page-title">
+          <Clipboard className="header-icon" />
+          FAST ORDER
+        </h1>
       </header>
 
       <main className="page-content">
@@ -127,7 +131,7 @@ function App() {
         <StatusMessage type={status.type} message={status.message} testId="generated-message" />
 
         {status.type === 'idle' && (
-          <div className="field-hint" style={{ textAlign: 'center', marginTop: 'var(--space-2)' }}>
+          <div className="field-hint keyboard-hint" style={{ textAlign: 'center', marginTop: 'var(--space-2)' }}>
             Shortcuts: Shift+Enter (First-Touch) • ENTER (Normal/Nitro) • ESC to clear • Ctrl+Shift+C to generate
           </div>
         )}

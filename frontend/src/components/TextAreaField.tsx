@@ -1,4 +1,5 @@
 import { ReactNode, forwardRef } from 'react'
+import { X } from 'lucide-react'
 
 interface TextAreaFieldProps {
   label: string
@@ -34,8 +35,9 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
           <button
             className="btn-clear"
             onClick={() => onChange('')}
+            aria-label="Clear"
           >
-            CLEAR
+            <X size={16} />
           </button>
         )}
       </div>

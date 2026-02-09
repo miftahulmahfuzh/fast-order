@@ -1,3 +1,5 @@
+import { Copy, Loader2 } from 'lucide-react'
+
 interface GenerateButtonProps {
   onClick: () => void
   disabled?: boolean
@@ -11,7 +13,17 @@ export function GenerateButton({ onClick, disabled, loading }: GenerateButtonPro
       onClick={onClick}
       disabled={disabled}
     >
-      {loading ? 'GENERATING...' : 'GENERATE & COPY'}
+      {loading ? (
+        <>
+          <Loader2 className="btn-icon-spin" size={20} />
+          GENERATING...
+        </>
+      ) : (
+        <>
+          <Copy size={20} />
+          GENERATE & COPY
+        </>
+      )}
     </button>
   )
 }
