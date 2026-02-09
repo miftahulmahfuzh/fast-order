@@ -6,7 +6,11 @@
 
 ## Executive Summary
 
-Deploying the frontend to Render required 6 iterative fixes to properly configure nginx environment variable substitution. The core issue was that `envsubst` was replacing nginx's built-in runtime variables (`$host`, `$remote_addr`, `$scheme`, etc.) with empty strings, causing nginx configuration errors.
+Deploying the frontend to Render required two phases of fixes:
+1. **Phase 1 (6 commits):** Fixing nginx environment variable substitution issues
+2. **Phase 2 (1 commit):** Fixing nginx proxy configuration for backend connectivity (307 redirect loop)
+
+The final solution required: proper envsubst escaping, using HTTPS for backend connection, removing incorrect Host header override, and enabling SSL SNI.
 
 ## Timeline
 
@@ -19,6 +23,7 @@ Deploying the frontend to Render required 6 iterative fixes to properly configur
 | `079a068` | Fix #4 | Simplify envsubst usage |
 | `7912fab` | Fix #5 | Use envsubst SHELL-FORMAT to preserve nginx variables |
 | `5e20ed7` | Fix #6 | Properly escape envsubst variables in CMD |
+| `30bca85` | Fix #7 | Fix nginx proxy for backend connectivity (307 redirect loop) |
 
 ## The Problem
 
@@ -88,6 +93,91 @@ CMD ["/bin/sh", "-c", "... envsubst '\\$PORT \\$BACKEND_URL' < ..."]
 ```
 **Success:** The `\\$` escaping ensures envsubst receives literal `$PORT` and `$BACKEND_URL`.
 
+---
+
+## Phase 2: Backend Proxy Configuration Issue
+
+### The Problem
+
+After successfully deploying the frontend, the app returned **HTTP 307 redirects** when trying to call the backend API, causing a redirect loop.
+
+#### Symptom Flow
+1. Browser sends: `POST /api/generate-order` to `https://fast-order-1.onrender.com`
+2. Frontend nginx returns: **307 redirect**
+3. Browser follows redirect to: `POST /generate-order` (without `/api`)
+4. Frontend returns: **405 Method Not Allowed** (no route matches)
+
+#### Render Frontend Logs
+```
+127.0.0.1 - - [09/Feb/2026:06:35:12 +0000] "POST /api/generate-order HTTP/1.1" 307 0
+127.0.0.1 - - [09/Feb/2026:06:35:12 +0000] "POST /generate-order HTTP/1.1" 405 559
+```
+
+### Root Cause Analysis
+
+The issue had **three contributing factors**:
+
+#### 1. Host Header Mismatch (`changeOrigin` equivalent missing)
+```nginx
+# WRONG: This sends the Frontend's domain to the Backend
+proxy_set_header Host $host;  # Host = fast-order-1.onrender.com (frontend)
+```
+
+When connecting to the backend but sending the frontend's Host header, Render's routing became confused. The load balancer saw a request for the frontend (which forces HTTPS), returning a 307 redirect.
+
+**Vite proxy worked because** it has `changeOrigin: true`, which changes the Host header to match the target (backend).
+
+#### 2. HTTP vs HTTPS Protocol
+```bash
+# WRONG: Using HTTP triggers Render's automatic HTTPS redirect
+BACKEND_URL=http://fast-order-xvkq.onrender.com
+```
+
+Render applications are served over HTTPS. While port 80 (HTTP) is open, Render's load balancer redirects HTTP traffic to HTTPS, causing 307 responses.
+
+#### 3. Missing SSL SNI Configuration
+When connecting to HTTPS backends on shared infrastructure like Render, SNI (Server Name Indication) is required so the load balancer knows which app's SSL certificate to use.
+
+### The Solution (`30bca85`) ✅
+
+#### Step 1: Update Environment Variable
+```bash
+# Change from HTTP to HTTPS
+BACKEND_URL=https://fast-order-xvkq.onrender.com
+```
+
+#### Step 2: Fix nginx.conf
+```nginx
+location /api/ {
+    proxy_pass $BACKEND_URL;
+
+    # REMOVE THIS LINE (was causing Host header mismatch)
+    # proxy_set_header Host $host;
+
+    # ADD THIS LINE (required for HTTPS on Render)
+    proxy_ssl_server_name on;
+
+    # Keep these for logging/IP tracking
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_redirect off;
+}
+```
+
+### Why This Works
+
+1. **`BACKEND_URL` with HTTPS:** Nginx talks to the backend securely, avoiding Render's HTTP→HTTPS redirect
+2. **Removing `Host $host`:** Nginx now defaults to using the hostname from `proxy_pass` URL (backend's host), mimicking `changeOrigin: true` behavior
+3. **`proxy_ssl_server_name on`:** Enables SNI so Render knows which SSL certificate and app to target during the TLS handshake
+
+### Testing Checklist
+
+- [ ] Local frontend → Local backend: Works
+- [ ] Local frontend → Render backend (via Vite proxy): Works
+- [ ] curl → Render backend directly: Works
+- [ ] Render frontend → Render backend: **Now works** ✅
+
 ## Final Working Configuration
 
 ### Dockerfile
@@ -125,12 +215,21 @@ server {
     }
 
     # API proxy - BACKEND_URL will be substituted by envsubst
+    # IMPORTANT: Use HTTPS (e.g., https://backend.onrender.com)
+    # DO NOT set Host header - let nginx use backend's hostname
     location /api/ {
         proxy_pass $BACKEND_URL;
-        proxy_set_header Host $host;
+
+        # Enable SNI for HTTPS (required for Render)
+        proxy_ssl_server_name on;
+
+        # Don't set Host - let nginx use the hostname from BACKEND_URL
+        # This mimics 'changeOrigin: true' behavior in Vite proxy
+
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
     }
 }
 ```
@@ -165,12 +264,28 @@ CMD /bin/sh -c '...'
 ### 5. Variable Distinguishability
 Use `${VAR}` syntax for environment variables and `$var` for nginx variables to make templates clearer.
 
+### 6. Nginx Proxy Headers Matter
+When proxying to a different backend, **don't override the Host header** unless necessary. Let nginx use the hostname from the `proxy_pass` URL.
+```nginx
+# WRONG: Sends frontend's host to backend
+proxy_set_header Host $host;
+
+# CORRECT: Let nginx use backend's hostname from proxy_pass
+# (don't set Host header at all)
+```
+
+### 7. Use HTTPS for Backend Communication
+On platforms like Render that force HTTPS, always use HTTPS URLs for backend communication to avoid 307 redirects.
+
+### 8. Enable SNI for HTTPS Proxies
+When using HTTPS with `proxy_pass`, enable `proxy_ssl_server_name on` for proper SSL handshake on shared infrastructure.
+
 ## Environment Variables Required
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Port nginx listens on | `10000` |
-| `BACKEND_URL` | Backend API URL for proxy | (required) |
+| Variable | Description | Default | Notes |
+|----------|-------------|---------|-------|
+| `PORT` | Port nginx listens on | `10000` | Render's default |
+| `BACKEND_URL` | Backend API URL for proxy | (required) | **Must use HTTPS** (e.g., `https://backend.onrender.com`) |
 
 ## References
 
@@ -191,3 +306,18 @@ Use `${VAR}` syntax for environment variables and `$var` for nginx variables to 
 3. **Always specify SHELL-FORMAT** when using envsubst with nginx configs.
 
 4. **Consider using nginx-plus** with `env` directive for production environments needing complex variable handling.
+
+5. **Test proxy configuration** by testing from local dev to deployed backend before deploying frontend:
+   ```typescript
+   // In vite.config.ts
+   proxy: {
+     '/api': {
+       target: 'https://your-backend.onrender.com',
+       changeOrigin: true,
+     }
+   }
+   ```
+
+6. **Always use HTTPS** for backend URLs on platforms that force HTTPS (Render, Heroku, etc.).
+
+7. **Enable SNI** when proxying to HTTPS backends: `proxy_ssl_server_name on;`
