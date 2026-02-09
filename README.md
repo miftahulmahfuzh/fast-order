@@ -136,6 +136,39 @@ go run main.go
 - **Frontend**: React, Vite, TypeScript
 - **LLM**: OpenAI-compatible (DeepSeek, OpenAI, etc.)
 
+## Testing
+
+The project includes two integration test scripts for different scenarios:
+
+### `./test-integration.sh`
+Runs **all** tests against the local development environment.
+```bash
+./test-integration.sh
+```
+- Use during active development
+- No Docker required
+- Faster feedback loop
+- Runs the full test suite via `npm run test`
+
+### `./test-docker-integration.sh`
+Runs Docker-specific integration tests against the deployed stack.
+```bash
+./test-docker-integration.sh
+```
+- Use before deploying or after infrastructure changes
+- Automatically ensures Docker containers are running
+- Tests against the actual production-like environment
+- Validates full deployment health
+
+### Why Two Scripts?
+
+| Script | Environment | Scope | Use Case |
+|--------|-------------|-------|----------|
+| `test-integration.sh` | Local dev | All tests | Feature development, quick iteration |
+| `test-docker-integration.sh` | Docker deployed | Integration only | Pre-deploy validation, CI/CD |
+
+The separation keeps local development fast while ensuring deployment-specific concerns (container health, networking, etc.) are validated separately.
+
 ## License
 
 MIT
