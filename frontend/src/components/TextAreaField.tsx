@@ -5,7 +5,6 @@ interface TextAreaFieldProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
-  required?: boolean
   onKeyDown?: (e: React.KeyboardEvent) => void
   hint?: ReactNode
   testId?: string
@@ -17,31 +16,24 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
   value,
   onChange,
   placeholder,
-  required = false,
   onKeyDown,
   hint,
   testId,
   autoFocus = false,
 }, ref) => {
   return (
-    <div className="field-container">
-      <div className="field-header">
-        <span className="field-label">
-          {label}
-          {required && <span className="field-required"> *</span>}
-        </span>
+    <div className="field">
+      <div className="field-top">
+        <span className="field-label">{label}</span>
         {value && (
-          <button
-            className="btn-clear"
-            onClick={() => onChange('')}
-          >
-            CLEAR
+          <button type="button" className="field-clear" onClick={() => onChange('')}>
+            clear
           </button>
         )}
       </div>
       <textarea
         ref={ref}
-        className="brutalist-textarea"
+        className="field-input"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
