@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-06-25
+
+### Added
+- Multi-provider LLM support with configurable provider type (e.g. Gemini alongside OpenAI-compatible APIs)
+- Kitchen-ticket UI revamp with dedicated design tokens and self-hosted fonts
+- Receipt-column shell layout with live station status header
+- Printed-ticket output with CSS line-reveal animation and tear caption
+- Error stamp and legend on the kitchen-ticket layout
+- Borderless monospace input fields with ember focus baseline
+- Self-hosted SVG favicon
+- Backend end-to-end order test
+- Config package tests and LLM assemble logic with unit tests
+- Claude context shortcuts and favicon reference in project docs
+- Environment variables for the frontend Docker service
+
+### Changed
+- Decomposed prompt logic into a dedicated assemble module
+- Replaced the slab generate button with a quiet generate text action
+- Refactored config handling to support multiple LLM providers
+
+[0.2.0]: https://github.com/miftahfast/fast-order/compare/v0.1.0...v0.2.0
+
 ## [0.1.0] - 2026-02-09
 
 ### Added
