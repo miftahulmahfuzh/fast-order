@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced the slab generate button with a quiet generate text action
 - Refactored config handling to support multiple LLM providers
 
-[0.2.0]: https://github.com/miftahfast/fast-order/compare/v0.1.0...v0.2.0
+[0.2.0]: https://github.com/miftahulmahfuzh/fast-order/compare/v0.1.0...v0.2.0
 
 ## [0.1.0] - 2026-02-09
 
@@ -56,4 +56,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - node_modules from git tracking (frontend)
 
-[0.1.0]: https://github.com/miftahfast/fast-order/compare/4ec722602e751d55319434c8174a4869db4d3b55...v0.1.0
+[0.1.0]: https://github.com/miftahulmahfuzh/fast-order/compare/4ec722602e751d55319434c8174a4869db4d3b55...v0.1.0
