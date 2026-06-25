@@ -78,30 +78,6 @@ body {
   gap: var(--space-6);
 }
 
-/* Generate Button */
-.btn-generate {
-  width: 100%;
-  padding: var(--space-4) var(--space-6);
-  background: var(--primary);
-  color: var(--white);
-  border: 2px solid var(--neutral-950);
-  border-radius: 0;
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 200ms;
-}
-
-.btn-generate:hover:not(:disabled) {
-  background: var(--primary-dark);
-}
-
-.btn-generate:disabled {
-  background: var(--neutral-200);
-  cursor: not-allowed;
-}
-
 /* Status Message */
 .status-message {
   padding: var(--space-3) var(--space-4);
@@ -257,4 +233,75 @@ body {
   font-size: 0.6875rem;
   color: var(--muted);
   letter-spacing: 0.02em;
+}
+
+/* Generate action */
+.actions {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-2) 0;
+}
+
+.print-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  transition: color var(--dur) ease;
+}
+
+.print-action .kbd {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--muted);
+  transition: color var(--dur) ease;
+}
+
+.print-action::after {
+  content: "";
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: 2px;
+  height: 1px;
+  background: var(--ember);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--dur) ease;
+}
+
+.print-action:hover:not(:disabled),
+.print-action:focus-visible {
+  color: var(--ember);
+}
+
+.print-action:hover:not(:disabled) .kbd {
+  color: var(--ember);
+}
+
+.print-action:hover:not(:disabled)::after,
+.print-action:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.print-action:focus-visible {
+  outline: none;
+}
+
+.print-action:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.print-action:disabled .kbd {
+  color: var(--rule);
 }

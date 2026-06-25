@@ -6,12 +6,11 @@ interface GenerateButtonProps {
 
 export function GenerateButton({ onClick, disabled, loading }: GenerateButtonProps) {
   return (
-    <button
-      className="btn-generate"
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {loading ? 'GENERATING...' : 'GENERATE & COPY'}
-    </button>
+    <div className="actions">
+      <button type="button" className="print-action" onClick={onClick} disabled={disabled}>
+        {loading ? 'printing…' : 'generate'}
+        {!loading && <span className="kbd">⏎</span>}
+      </button>
+    </div>
   )
 }
