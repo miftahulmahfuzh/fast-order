@@ -340,3 +340,14 @@ body {
   .ticket-line { animation: none; opacity: 1; }
   .caret { animation: none; }
 }
+
+/* Legend */
+.legend {
+  margin-top: auto;
+  padding-top: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-align: center;
+}

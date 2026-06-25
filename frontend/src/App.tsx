@@ -46,11 +46,11 @@ function App() {
 
     // Validate based on mode
     if (mode === 'first-touch' && !listMenu.trim()) {
-      setStatus({ type: 'error', message: 'List menu required for first-touch mode' })
+      setStatus({ type: 'error', message: 'needs a menu to print' })
       return
     }
     if ((mode === 'normal' || mode === 'nitro') && !currentOrders.trim()) {
-      setStatus({ type: 'error', message: 'Current orders is required' })
+      setStatus({ type: 'error', message: 'needs current orders to print' })
       return
     }
 
@@ -60,19 +60,13 @@ function App() {
     try {
       const data = await generateOrder({ listMenu, currentOrders, mode })
 
+      // success — message is the raw order; the ticket renders the caption itself
       await navigator.clipboard.writeText(data.generatedMessage)
-
-      // Mode labels for notification
-      const modeLabels: Record<string, string> = {
-        'normal': 'Normal Mode',
-        'nitro': 'Nitro Mode',
-        'first-touch': 'First-Touch Mode',
-      }
-      setStatus({ type: 'success', message: `Order copied to clipboard! (${modeLabels[mode]}) Press Ctrl+V to paste in WhatsApp` })
+      setStatus({ type: 'success', message: data.generatedMessage })
     } catch (error) {
       setStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'An error occurred',
+        message: error instanceof Error ? error.message.toLowerCase() : 'something went wrong',
       })
     } finally {
       setIsLoading(false)
@@ -103,40 +97,34 @@ function App() {
         </span>
       </header>
 
-      <main className="page-content">
-        <TextAreaField
-          label="menu"
-          value={listMenu}
-          onChange={setListMenu}
-          placeholder="paste the menu — or leave empty for nitro"
-          onKeyDown={handleListMenuKeyDown}
-          testId="list-menu"
-          autoFocus
-        />
+      <TextAreaField
+        label="menu"
+        value={listMenu}
+        onChange={setListMenu}
+        placeholder="paste the menu — or leave empty for nitro"
+        onKeyDown={handleListMenuKeyDown}
+        testId="list-menu"
+        autoFocus
+      />
 
-        <TextAreaField
-          label="orders"
-          value={currentOrders}
-          onChange={setCurrentOrders}
-          placeholder="paste what's already been ordered"
-          onKeyDown={handleKeyDown}
-          testId="current-orders"
-        />
+      <TextAreaField
+        label="orders"
+        value={currentOrders}
+        onChange={setCurrentOrders}
+        placeholder="paste what's already been ordered"
+        onKeyDown={handleKeyDown}
+        testId="current-orders"
+      />
 
-        <GenerateButton
-          onClick={handleGenerate}
-          disabled={(!listMenu.trim() && !currentOrders.trim()) || isLoading}
-          loading={isLoading}
-        />
+      <GenerateButton
+        onClick={handleGenerate}
+        disabled={(!listMenu.trim() && !currentOrders.trim()) || isLoading}
+        loading={isLoading}
+      />
 
-        <StatusMessage type={status.type} message={status.message} testId="generated-message" />
+      <StatusMessage type={status.type} message={status.message} testId="generated-message" />
 
-        {status.type === 'idle' && (
-          <div className="field-hint" style={{ textAlign: 'center', marginTop: 'var(--space-2)' }}>
-            Shortcuts: Shift+Enter (First-Touch) • ENTER (Normal/Nitro) • ESC to clear • Ctrl+Shift+C to generate
-          </div>
-        )}
-      </main>
+      <div className="legend">⏎ print · ⇧⏎ first-touch · esc clear · ⌃⇧c print</div>
     </div>
   )
 }
