@@ -125,10 +125,25 @@ go run main.go
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `LLM_API_KEY` | Your LLM provider API key | - |
-| `LLM_BASE_URL` | LLM API base URL | - |
-| `LLM_MODEL` | Model name | - |
+| `LLM_TYPE` | Active provider: `DEEPSEEK` (default) or `GEMINI` | `DEEPSEEK` |
+| `LLM_API_KEY` | DeepSeek/OpenAI-compatible API key | - |
+| `LLM_BASE_URL` | DeepSeek/OpenAI-compatible base URL | - |
+| `LLM_MODEL` | DeepSeek/OpenAI model name | - |
+| `GEMINI_LLM_API_KEY` | Google AI API key (used when `LLM_TYPE=GEMINI`) | - |
+| `GEMINI_MODEL` | Gemini model name, e.g. `gemini-3.1-flash-lite` | - |
 | `PORT` | Backend port | 8080 |
+
+### Choosing a provider
+
+Set `LLM_TYPE=GEMINI` to route generation through Google's Gemini (Flash Lite is
+significantly faster). Gemini is called via Google's OpenAI-compatible endpoint, so
+it reuses the same client path and circuit breaker. Set `LLM_TYPE=DEEPSEEK` (or omit
+it) to use the DeepSeek/OpenAI-compatible `LLM_*` settings.
+
+> **Performance note:** The backend parses the order numbering itself and only asks
+> the LLM for the dishes (a single short line), then assembles the numbered result in
+> Go. This keeps the existing list verbatim and makes Normal and Nitro modes
+> noticeably faster. The API response includes a `durationMs` field reporting LLM time.
 
 ## Tech Stack
 
@@ -168,6 +183,32 @@ Runs Docker-specific integration tests against the deployed stack.
 | `test-docker-integration.sh` | Docker deployed | Integration only | Pre-deploy validation, CI/CD |
 
 The separation keeps local development fast while ensuring deployment-specific concerns (container health, networking, etc.) are validated separately.
+
+### Backend Unit Tests
+
+```bash
+cd backend
+go test ./...
+```
+
+### End-to-End Test (against a running backend)
+
+The Go e2e test hits the live `/api/generate-order` endpoint in **nitro mode** and
+reports how long generation took (both server-reported `durationMs` and full
+client round-trip). It is gated behind the `e2e` build tag so it never runs during
+normal `go test ./...`.
+
+```bash
+# 1. Start the stack (reads provider config from .env, e.g. LLM_TYPE=GEMINI)
+docker compose down && docker compose up -d --build
+
+# 2. Run the e2e test against the container (backend on :8089)
+cd backend
+BASE_URL=http://localhost:8089 go test -tags e2e -v -count=1 ./e2e/...
+```
+
+`-count=1` disables Go's test cache so you get a fresh timing measurement each run.
+`BASE_URL` defaults to `http://localhost:8089` if unset.
 
 ## License
 

@@ -1,6 +1,7 @@
 package llm
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -11,33 +12,46 @@ func TestBuildPrompt(t *testing.T) {
 		contains string
 	}{
 		{
-			name: "Normal mode with menu",
+			name: "Normal mode with menu references the menu",
 			params: GenerateOrderParams{
-				ListMenu:     "Cah buncis\nFillet ayam",
+				Mode:          "normal",
+				ListMenu:      "Cah buncis\nFillet ayam",
 				CurrentOrders: "1. farid: nasi 1",
 			},
-			contains: "AVAILABLE MENU",
+			contains: "Cah buncis",
 		},
 		{
-			name: "Nitro mode without menu",
+			name: "First-touch mode references the menu",
 			params: GenerateOrderParams{
-				ListMenu:     "",
+				Mode:     "first-touch",
+				ListMenu: "Cah buncis\nFillet ayam",
+			},
+			contains: "Choose from this menu",
+		},
+		{
+			name: "Nitro mode references existing orders",
+			params: GenerateOrderParams{
+				Mode:          "nitro",
+				CurrentOrders: "1. farid: nasi 1, jamur crispy",
+			},
+			contains: "jamur crispy",
+		},
+		{
+			name: "All modes instruct items-only output",
+			params: GenerateOrderParams{
+				Mode:          "nitro",
 				CurrentOrders: "1. farid: nasi 1",
 			},
-			contains: "No menu provided",
+			contains: "comma-separated line",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			prompt := BuildPrompt(tt.params)
-			if !contains(prompt, tt.contains) {
-				t.Errorf("Prompt should contain %q", tt.contains)
+			if !strings.Contains(prompt, tt.contains) {
+				t.Errorf("Prompt should contain %q\ngot:\n%s", tt.contains, prompt)
 			}
 		})
 	}
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > len(substr) && (s[:len(substr)] == substr || contains(s[1:], substr)))
 }

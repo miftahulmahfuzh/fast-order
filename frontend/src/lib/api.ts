@@ -15,6 +15,7 @@ export interface GenerateOrderParams {
 
 export interface GenerateOrderResponse {
   generatedMessage: string
+  durationMs?: number
   error?: string
 }
 

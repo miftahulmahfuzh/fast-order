@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/miftah/fast-order/internal/config"
@@ -28,6 +27,8 @@ func NewResilientLLM(ctx context.Context, cfg *config.LLMConfig) (*ResilientLLM,
 		return nil, fmt.Errorf("failed to create LLM client: %w", err)
 	}
 
+	log.Printf("[LLM] provider=%s model=%s", cfg.Type, cfg.Model)
+
 	breaker := gobreaker.NewCircuitBreaker(gobreaker.Settings{
 		Name:        "llm",
 		MaxRequests: 3,
@@ -44,23 +45,8 @@ func NewResilientLLM(ctx context.Context, cfg *config.LLMConfig) (*ResilientLLM,
 	}, nil
 }
 
-// SanitizeOrderOutput cleans LLM output to ensure format compliance.
-// Removes square brackets [] and normalizes separators to use ":"
-func SanitizeOrderOutput(input string) string {
-	// Remove square brackets
-	result := input
-	result = strings.ReplaceAll(result, "[", "")
-	result = strings.ReplaceAll(result, "]", "")
-
-	// Normalize separator: replace " - " with " : "
-	// This handles cases where LLM uses dash instead of colon
-	result = strings.ReplaceAll(result, " - ", " : ")
-
-	return result
-}
-
 func (r *ResilientLLM) GenerateFromSinglePrompt(ctx context.Context, prompt string) (string, error) {
-	result, err := r.breaker.Execute(func() (interface{}, error) {
+	result, err := r.breaker.Execute(func() (any, error) {
 		return llms.GenerateFromSinglePrompt(ctx, r.llm, prompt)
 	})
 

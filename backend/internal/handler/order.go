@@ -11,14 +11,15 @@ import (
 )
 
 type GenerateOrderRequest struct {
-	Mode         string `json:"mode"`
-	ListMenu     string `json:"listMenu"`
+	Mode          string `json:"mode"`
+	ListMenu      string `json:"listMenu"`
 	CurrentOrders string `json:"currentOrders"`
 }
 
 type GenerateOrderResponse struct {
 	GeneratedMessage string `json:"generatedMessage"`
-	Error           string `json:"error,omitempty"`
+	DurationMs       int64  `json:"durationMs,omitempty"`
+	Error            string `json:"error,omitempty"`
 }
 
 type OrderHandler struct {
@@ -86,15 +87,22 @@ func (h *OrderHandler) GenerateOrder(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
 
+	// Determine the next order number ourselves so the LLM only has to pick
+	// dishes (one short line) instead of regenerating the whole list. This
+	// preserves the existing orders verbatim and is much faster.
+	nextNumber := llm.NextOrderNumber(req.CurrentOrders)
+
 	prompt := llm.BuildPrompt(llm.GenerateOrderParams{
 		Mode:          req.Mode,
 		ListMenu:      req.ListMenu,
 		CurrentOrders: req.CurrentOrders,
 	})
 
+	start := time.Now()
 	result, err := h.llm.GenerateFromSinglePrompt(ctx, prompt)
+	elapsed := time.Since(start)
 	if err != nil {
-		log.Printf("[Handler] LLM error: %v", err)
+		log.Printf("[Handler] LLM error after %s: %v", elapsed.Round(time.Millisecond), err)
 		w.WriteHeader(http.StatusBadGateway)
 		json.NewEncoder(w).Encode(GenerateOrderResponse{
 			Error: "Failed to generate order",
@@ -102,11 +110,16 @@ func (h *OrderHandler) GenerateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Sanitize output to ensure format compliance (remove [], normalize separators)
-	sanitizedResult := llm.SanitizeOrderOutput(result)
+	log.Printf("[Handler] LLM generation (mode=%s) took %s", req.Mode, elapsed.Round(time.Millisecond))
+
+	// The model returns only miftah's dishes; we sanitize them and assemble the
+	// final numbered line onto the original list.
+	items := llm.SanitizeOrderItems(result)
+	finalMessage := llm.AssembleOrder(req.CurrentOrders, nextNumber, items)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(GenerateOrderResponse{
-		GeneratedMessage: sanitizedResult,
+		GeneratedMessage: finalMessage,
+		DurationMs:       elapsed.Milliseconds(),
 	})
 }
