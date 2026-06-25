@@ -78,72 +78,6 @@ body {
   gap: var(--space-6);
 }
 
-/* Field Container */
-.field-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.field-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.field-label {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--neutral-950);
-}
-
-.field-required {
-  color: var(--error);
-  font-size: 0.75rem;
-}
-
-/* Textarea */
-.brutalist-textarea {
-  width: 100%;
-  min-height: 150px;
-  padding: var(--space-3) var(--space-4);
-  background: var(--white);
-  border: 2px solid var(--neutral-950);
-  border-radius: 0;
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  color: var(--neutral-950);
-  resize: vertical;
-}
-
-.brutalist-textarea:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: -2px;
-}
-
-.brutalist-textarea::placeholder {
-  color: var(--neutral-500);
-}
-
-/* Clear Button */
-.btn-clear {
-  padding: var(--space-2) var(--space-3);
-  background: var(--neutral-200);
-  color: var(--neutral-950);
-  border: 2px solid var(--neutral-950);
-  border-radius: 0;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: background 200ms;
-}
-
-.btn-clear:hover {
-  background: var(--neutral-100);
-}
-
 /* Generate Button */
 .btn-generate {
   width: 100%;
@@ -208,14 +142,6 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Field Hint */
-.field-hint {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
-  color: var(--neutral-500);
-  margin-top: var(--space-1);
-}
-
 /* Ticket shell */
 .ticket {
   max-width: var(--ticket-width);
@@ -264,4 +190,71 @@ body {
 
 .station[data-armed="true"] .station-dot {
   background: var(--ember);
+}
+
+/* Field */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.field-label {
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.field-clear {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--dur) ease;
+}
+
+.field-clear:hover {
+  color: var(--ember);
+}
+
+.field-input {
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-2) 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ink);
+  transition: border-color var(--dur) ease;
+}
+
+.field-input::placeholder {
+  color: var(--muted);
+}
+
+.field-input:focus {
+  outline: none;
+  border-bottom-color: var(--ember);
+}
+
+.field-hint {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
 }

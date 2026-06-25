@@ -105,22 +105,20 @@ function App() {
 
       <main className="page-content">
         <TextAreaField
-          label="LIST MENU"
+          label="menu"
           value={listMenu}
           onChange={setListMenu}
-          placeholder="Paste menu here... (Ctrl+V to paste, then Shift+Enter for First-Touch Mode)"
-          hint="Optional - Shift+Enter for First-Touch Mode (order #1), leave empty for Nitro Mode"
+          placeholder="paste the menu — or leave empty for nitro"
           onKeyDown={handleListMenuKeyDown}
           testId="list-menu"
           autoFocus
         />
 
         <TextAreaField
-          label="CURRENT ORDERS"
+          label="orders"
           value={currentOrders}
           onChange={setCurrentOrders}
-          placeholder="Paste current orders here... (Ctrl+V to paste, then ENTER to generate)"
-          required
+          placeholder="paste what's already been ordered"
           onKeyDown={handleKeyDown}
           testId="current-orders"
         />
