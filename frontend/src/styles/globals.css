@@ -78,46 +78,6 @@ body {
   gap: var(--space-6);
 }
 
-/* Status Message */
-.status-message {
-  padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--neutral-950);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.status-message.success {
-  background: #F0FDF4;
-  border-color: var(--success);
-}
-
-.status-message.error {
-  background: #FEF2F2;
-  border-color: var(--error);
-}
-
-.status-message.loading {
-  background: var(--neutral-100);
-}
-
-/* Spinner */
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--neutral-200);
-  border-top: 2px solid var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* Ticket shell */
 .ticket {
   max-width: var(--ticket-width);
@@ -304,4 +264,79 @@ body {
 
 .print-action:disabled .kbd {
   color: var(--rule);
+}
+
+/* Printed ticket output */
+.ticket-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.tear {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  user-select: none;
+}
+
+.tear::before,
+.tear::after {
+  content: "";
+  flex: 1;
+  border-top: 1px dotted var(--rule);
+}
+
+.ticket-out {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.ticket-line {
+  opacity: 0;
+  animation: print-in 220ms ease forwards;
+}
+
+@keyframes print-in {
+  to { opacity: 1; }
+}
+
+.caret {
+  display: inline-block;
+  color: var(--ember);
+  animation: caret-blink 700ms steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% { opacity: 0; }
+}
+
+.ticket-caption {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ember);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.stamp {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--ember);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket-line { animation: none; opacity: 1; }
+  .caret { animation: none; }
 }
