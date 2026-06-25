@@ -14,6 +14,9 @@ function App() {
     message: '',
   })
 
+  const armed = Boolean(listMenu.trim() || currentOrders.trim())
+  const stationLabel = armed ? detectMode(listMenu, currentOrders) : 'ready'
+
   // Global keyboard shortcuts
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -91,9 +94,13 @@ function App() {
   }
 
   return (
-    <div className="page-container">
-      <header className="page-header">
-        <h1 className="page-title">FAST ORDER</h1>
+    <div className="ticket">
+      <header className="ticket-head">
+        <span className="wordmark">fast order</span>
+        <span className="station" data-armed={armed}>
+          <span className="station-dot" />
+          {stationLabel}
+        </span>
       </header>
 
       <main className="page-content">
