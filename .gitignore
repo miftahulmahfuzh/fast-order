@@ -4,6 +4,8 @@ backend/.env
 backend/fast-order
 *_code_analyzer.md
 
+docs/plans
+
 # Frontend build outputs
 frontend/dist/
 frontend/build/
