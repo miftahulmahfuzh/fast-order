@@ -1,14 +1,14 @@
 :root {
-  /* Colors */
-  --primary: #FF4D00;
-  --primary-dark: #E64500;
-  --neutral-950: #0A0A0A;
-  --neutral-500: #6B7280;
-  --neutral-200: #EAEAEA;
-  --neutral-100: #F3F3F3;
-  --white: #FFFFFF;
-  --success: #22C55E;
-  --error: #EF4444;
+  /* Kitchen Ticket palette */
+  --paper: #F7F3EC;
+  --ink: #1A1714;
+  --muted: #8C8275;
+  --ember: #D6452B;
+  --rule: #E0D9CE;
+
+  /* Type */
+  --font-chrome: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
 
   /* Spacing */
   --space-1: 4px;
@@ -18,6 +18,11 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-12: 48px;
+
+  /* Receipt column */
+  --ticket-width: 460px;
+
+  --dur: 120ms;
 }
 
 * {
@@ -26,11 +31,16 @@
   box-sizing: border-box;
 }
 
+html, body {
+  background: var(--paper);
+}
+
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--neutral-100);
-  color: var(--neutral-950);
-  line-height: 1.5;
+  font-family: var(--font-chrome);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Page Container */
